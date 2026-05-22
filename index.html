@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <!-- No scroll / single page: lock the viewport, disable zoom so the page
+       always shows exactly one screen and the runaway button stays in bounds. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#d76d80" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Саған бір сұрағым бар... 💌" />
+
+  <!-- Link-preview (Open Graph) so a shared link looks lovely -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Жаным... 💕" />
+  <meta property="og:description" content="Саған бір сұрағым бар 💌" />
+  <meta property="og:image" content="https://temur007222.github.io/kezdesu/her-photo.jpg" />
+
+  <title>Жаным... 💕</title>
+
+  <!-- Emoji heart favicon (inline SVG, no extra file) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%A4%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+
+  <!-- Elegant serif heading font (Playfair Display ships Cyrillic + Cyrillic-Ext,
+       so Kazakh letters ә ғ қ ң ө ұ ү һ і render correctly). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" />
+
+  <style>
+    /* ============================================================
+       ROMANTIC PALETTE — warm reds, soft pinks, dusty rose, cream/gold
+       ============================================================ */
+    :root {
+      --red:        #c1121f;   /* deep warm red          */
+      --red-soft:   #db5e74;   /* softened red           */
+      --rose:       #e07a8b;   /* dusty rose             */
+      --pink:       #f3a9b7;   /* soft pink              */
+      --pink-pale:  #fde2e8;   /* pale pink              */
+      --cream:      #fff5ec;   /* warm cream             */
+      --gold:       #d4a35e;   /* warm gold accent       */
+      --ink:        #5a2230;   /* deep rose-brown text   */
+      --ink-soft:   #8a4452;   /* muted rose-brown text  */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;            /* SINGLE PAGE — never scrolls       */
+      overscroll-behavior: none;   /* no rubber-band bounce on mobile   */
+    }
+
+    body {
+      /* Lock to exactly one viewport (dvh handles mobile browser chrome) */
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      -webkit-tap-highlight-color: transparent;
+
+      /* TEXTURED BACKGROUND:
+         a romantic gradient mesh (two radial glows + a diagonal gradient).
+         The faint paper/noise texture is layered on top via body::before. */
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 222, 205, 0.65), transparent 55%),
+        radial-gradient(circle at 86% 88%, rgba(193, 18, 31, 0.40),  transparent 55%),
+        linear-gradient(155deg, #fde2e8 0%, #f3a9b7 42%, #d76d80 78%, #b9485c 100%);
+    }
+
+    /* Subtle desaturated noise — a soft "paper" texture over the gradient */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+      opacity: 0.42;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ============================================================
+       FLOATING HEARTS — gently drift upward behind the card
+       ============================================================ */
+    .hearts {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;   /* never blocks the buttons */
+    }
+    .heart {
+      position: absolute;
+      bottom: -44px;
+      will-change: transform, opacity;
+      user-select: none;
+      animation-name: floatUp;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.9);  opacity: 0; }
+      12%  { opacity: 0.85; }
+      88%  { opacity: 0.65; }
+      100% { transform: translate3d(var(--sway), calc(-100dvh - 90px), 0) rotate(38deg) scale(1.05); opacity: 0; }
+    }
+
+    /* ============================================================
+       THE CARD
+       ============================================================ */
+    .card {
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 420px);
+      max-height: 96dvh;
+      padding: clamp(18px, 4.6vw, 34px) clamp(16px, 5vw, 30px);
+      text-align: center;
+
+      background: rgba(255, 250, 245, 0.80);
+      -webkit-backdrop-filter: blur(7px);
+      backdrop-filter: blur(7px);
+      border: 1px solid rgba(212, 163, 94, 0.45);
+      border-radius: 30px;
+      box-shadow:
+        0 30px 60px -22px rgba(122, 24, 44, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(9px, 2.1vh, 18px);
+
+      animation: cardIn 0.75s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    .view { display: flex; flex-direction: column; align-items: center;
+            gap: clamp(9px, 2.1vh, 18px); width: 100%; }
+    .view[hidden] { display: none; }
+
+    /* Small kicker line above the photo */
+    .kicker {
+      font-size: clamp(0.72rem, 3vw, 0.92rem);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    /* ---- Framed, rounded photo ---- */
+    .photo-frame {
+      width: clamp(118px, 25vh, 188px);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      padding: 5px;                       /* cream inner frame */
+      background: var(--cream);
+      box-shadow:
+        0 0 0 3px var(--gold),
+        0 16px 32px -10px rgba(122, 24, 44, 0.6);
+    }
+    .photo {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: 50% 75%;           /* keeps her in frame — tweak if needed */
+      display: block;
+    }
+
+    /* ---- Headline (the question, with the Kazakh endearment "Жаным") ---- */
+    .headline {
+      font-family: "Playfair Display", "Times New Roman", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.34rem, 5.1vw, 2.15rem);
+      line-height: 1.22;
+      color: var(--ink);
+    }
+    .headline .accent { color: var(--red); font-style: italic; }
+
+    /* ---- Date / time / location pills ---- */
+    .details {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 8px;
+    }
+    .pill {
+      font-size: clamp(0.74rem, 3vw, 0.92rem);
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--pink-pale);
+      border: 1px solid rgba(212, 163, 94, 0.5);
+      padding: 6px 13px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(8px, 1.8vh, 14px);
+      margin-top: 2px;
+    }
+
+    /* ---- "Of course Yes" — large, prominent, pulsing ---- */
+    .btn-yes {
+      font-family: inherit;
+      font-size: clamp(1rem, 4.4vw, 1.24rem);
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      border-radius: 999px;
+      padding: clamp(13px, 2vh, 17px) clamp(26px, 7vw, 42px);
+      background: linear-gradient(135deg, var(--red-soft), var(--red));
+      box-shadow: 0 14px 28px -8px rgba(193, 18, 31, 0.65);
+      touch-action: manipulation;
+      animation: yesPulse 2.6s ease-in-out infinite;
+    }
+    .btn-yes:active { transform: scale(0.96); }
+    @keyframes yesPulse {
+      0%, 100% { box-shadow: 0 12px 26px -8px rgba(193, 18, 31, 0.6);  transform: scale(1); }
+      50%      { box-shadow: 0 20px 36px -8px rgba(193, 18, 31, 0.75); transform: scale(1.035); }
+    }
+
+    /* ---- "No" — small, subtle, and it runs away (positioned by JS) ---- */
+    .btn-no {
+      font-family: inherit;
+      font-size: clamp(0.8rem, 3.4vw, 0.95rem);
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(138, 68, 82, 0.35);
+      border-radius: 999px;
+      padding: 8px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* The slot reserves the No-button's space in the layout so that the
+       real (fixed-position) No button can sit over it without any reflow. */
+    .no-slot { visibility: hidden; }
+
+    /* The real, evasive No button: fixed so it never affects layout/scroll */
+    #noBtn {
+      position: fixed;
+      z-index: 6;
+      opacity: 0;                 /* revealed by JS a beat after load */
+      pointer-events: none;       /* inert until revealed             */
+      cursor: default;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      transition: top 0.14s ease, left 0.14s ease, transform 0.14s ease;
+    }
+
+    /* ============================================================
+       CONFIRMATION VIEW
+       ============================================================ */
+    .confirm .big-heart {
+      font-size: clamp(3rem, 13vw, 4.6rem);
+      line-height: 1;
+      animation: pop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both,
+                 beat 1.6s ease-in-out 0.7s infinite;
+    }
+    @keyframes pop {
+      0%   { transform: scale(0.5); opacity: 0; }
+      60%  { transform: scale(1.12); opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      25%      { transform: scale(1.13); }
+      40%      { transform: scale(1); }
+    }
+    .confirm .headline { animation: cardIn 0.6s ease 0.12s both; }
+    .confirm-msg {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(1.02rem, 4.2vw, 1.32rem);
+      line-height: 1.4;
+      color: var(--ink);
+      animation: cardIn 0.6s ease 0.22s both;
+    }
+    .confirm-sub {
+      font-size: clamp(0.85rem, 3.4vw, 1rem);
+      color: var(--ink-soft);
+      animation: cardIn 0.6s ease 0.34s both;
+    }
+
+    /* ============================================================
+       RESPONSIVE / ACCESSIBILITY
+       ============================================================ */
+    /* Extra-small phones (≤ 375px wide): tighten everything a touch */
+    @media (max-width: 375px) {
+      .card { gap: 9px; border-radius: 26px; }
+      .pill { padding: 5px 11px; }
+    }
+
+    /* Respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .heart { display: none; }
+      .card, .btn-yes, .confirm .big-heart,
+      .confirm .headline, .confirm-msg, .confirm-sub { animation: none; }
+      .card { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating hearts layer (populated by JS) -->
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+
+  <!-- ===================== THE CARD ===================== -->
+  <main class="card" id="card">
+
+    <!-- ---------- QUESTION VIEW ---------- -->
+    <section class="view" id="askView">
+      <p class="kicker">Саған бір сұрағым бар... 💌</p>
+
+      <!-- Her photo — drop your image in as her-photo.jpg next to this file -->
+      <div class="photo-frame">
+        <img class="photo" src="her-photo.jpg" alt="Фотосурет"
+             fetchpriority="high" decoding="async" draggable="false" />
+      </div>
+
+      <!-- Headline: warm question containing the Kazakh endearment "Жаным" -->
+      <h1 class="headline">Жаным, менімен <span class="accent">кездесуге</span> шығасың ба? 💕</h1>
+
+      <!-- Date · time · location, clearly shown -->
+      <div class="details">
+        <span class="pill">📅 Ертең, 23 мамыр</span>
+        <span class="pill">🕔 17:00</span>
+        <span class="pill">📍 Кипсала, Рига</span>
+      </div>
+
+      <div class="btn-area">
+        <button class="btn-yes" id="yesBtn" type="button">Әрине, иә 💕</button>
+        <!-- invisible placeholder that reserves the No button's space -->
+        <span class="btn-no no-slot" id="noSlot" aria-hidden="true">Жоқ</span>
+      </div>
+    </section>
+
+    <!-- ---------- CONFIRMATION VIEW (shown after she says yes) ---------- -->
+    <section class="view confirm" id="confirmView" hidden>
+      <div class="big-heart">💖</div>
+      <h1 class="headline">Иә! 🎉</h1>
+      <p class="confirm-msg">Ертең сағат 17:00-де Кипсалада кездесеміз!</p>
+      <p class="confirm-sub">Сені асыға күтемін ❤️</p>
+    </section>
+  </main>
+
+  <!-- The runaway "No" button lives outside the card (fixed position) -->
+  <button class="btn-no" id="noBtn" type="button" tabindex="-1" aria-hidden="true">Жоқ</button>
+
+  <!-- EmailJS SDK (client-side email, works on a static host) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       EMAILJS CONFIGURATION  —  ❗ FILL THESE IN  ❗
+       ------------------------------------------------------------
+       The page sends a confirmation email when she clicks "Әрине, иә".
+       It works with no backend. To enable it:
+
+         1. Create a free account at  https://www.emailjs.com/
+         2. Add an Email Service (e.g. connect your Gmail).
+              → copy its  Service ID   into  SERVICE_ID  below.
+         3. Create an Email Template. Inside the template use these
+            variables (type them with double curly braces):
+                 {{to_email}}        — put this in the template's "To Email" field
+                 {{subject}}         — e.g. used as the subject line
+                 {{message}}         — main body text
+                 {{accepted_at}}     — the timestamp she accepted
+                 {{event_details}}   — date / time / place of the date
+              → copy its  Template ID  into  TEMPLATE_ID  below.
+         4. Open  Account → General → Public Key.
+              → copy your  Public Key  into  PUBLIC_KEY  below.
+
+       Until you fill these in, the page still works perfectly — it just
+       skips sending the email (and logs what it *would* have sent).
+       ============================================================ */
+    const SERVICE_ID  = "YOUR_SERVICE_ID";    // e.g. "service_ab12cd3"
+    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";   // e.g. "template_xy98zw7"
+    const PUBLIC_KEY  = "YOUR_PUBLIC_KEY";    // e.g. "AbCdEfGhIjKlMnOp"
+
+    // Where the approval notification is sent.
+    const NOTIFY_EMAIL = "temurxaydarov1@gmail.com";
+
+    // True while a constant still holds its placeholder value.
+    const isPlaceholder = function (v) { return !v || v.indexOf("YOUR_") === 0; };
+
+    // Initialise EmailJS only if a real public key has been provided.
+    if (window.emailjs && !isPlaceholder(PUBLIC_KEY)) {
+      try { emailjs.init({ publicKey: PUBLIC_KEY }); }
+      catch (e) { try { emailjs.init(PUBLIC_KEY); } catch (_) {} }
+    }
+
+    /* ---------- shortcuts ---------- */
+    var $ = function (id) { return document.getElementById(id); };
+    var heartsLayer = $("hearts");
+    var askView     = $("askView");
+    var confirmView = $("confirmView");
+    var yesBtn      = $("yesBtn");
+    var noBtn       = $("noBtn");
+    var noSlot      = $("noSlot");
+
+    /* ============================================================
+       FLOATING HEARTS
+       ============================================================ */
+    var HEART_COLORS = ["#e07a8b", "#c1121f", "#f3a9b7", "#d4a35e", "#db5e74"];
+
+    function spawnHeart(opts) {
+      opts = opts || {};
+      var h = document.createElement("span");
+      h.className = "heart";
+      h.textContent = "♥"; // ♥
+      var size = opts.size || (14 + Math.random() * 26);
+      var dur  = opts.dur  || (9 + Math.random() * 8);
+      h.style.left = (opts.left != null ? opts.left : Math.random() * 100) + "vw";
+      h.style.fontSize = size + "px";
+      h.style.color = HEART_COLORS[(Math.random() * HEART_COLORS.length) | 0];
+      h.style.animationDuration = dur + "s";
+      // negative delay => hearts are already mid-flight when the page loads
+      h.style.animationDelay = (opts.delay != null ? opts.delay : -Math.random() * dur) + "s";
+      h.style.setProperty("--sway", ((Math.random() * 2 - 1) * 70).toFixed(0) + "px");
+      heartsLayer.appendChild(h);
+      if (opts.once) { setTimeout(function () { h.remove(); }, dur * 1000 + 250); }
+    }
+
+    // ambient hearts
+    for (var i = 0; i < 11; i++) { spawnHeart(); }
+
+    // a celebratory burst when she says yes
+    function burstHearts() {
+      for (var j = 0; j < 18; j++) {
+        spawnHeart({ size: 16 + Math.random() * 30, dur: 4 + Math.random() * 3,
+                     delay: -Math.random() * 1.5, once: true });
+      }
+    }
+
+    /* ============================================================
+       THE RUNAWAY "NO" BUTTON
+       It can never be clicked: it flees on hover/proximity (desktop)
+       and on touch (mobile), and any click/tap event is cancelled.
+       ============================================================ */
+    var hasMoved = false;          // has the No button fled at least once?
+    var lastX = -9999, lastY = -9999;  // last known pointer position
+
+    function placeAt(x, y) {
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+    }
+
+    // Snap the No button onto its reserved slot inside the card.
+    function snapToSlot() {
+      var r = noSlot.getBoundingClientRect();
+      placeAt(r.left, r.top);
+    }
+
+    // Do two boxes (with padding) overlap?
+    function overlaps(x, y, w, h, rect, pad) {
+      return !(x > rect.right + pad || x + w < rect.left - pad ||
+               y > rect.bottom + pad || y + h < rect.top - pad);
+    }
+
+    // Jump to a fresh random spot — on screen, clear of the Yes button,
+    // and away from the pointer so it can't be cornered.
+    function flee() {
+      hasMoved = true;
+      var m = 10;                                   // margin from screen edges
+      var w = noBtn.offsetWidth  || 70;
+      var h = noBtn.offsetHeight || 38;
+      var maxX = Math.max(m, window.innerWidth  - w - m);
+      var maxY = Math.max(m, window.innerHeight - h - m);
+      var yesRect = yesBtn.getBoundingClientRect();
+
+      var x = m, y = m;
+      for (var t = 0; t < 40; t++) {
+        x = m + Math.random() * (maxX - m);
+        y = m + Math.random() * (maxY - m);
+        var cx = x + w / 2, cy = y + h / 2;
+        var farFromPointer = Math.hypot(cx - lastX, cy - lastY) > 150;
+        var clearOfYes     = !overlaps(x, y, w, h, yesRect, 16);
+        if (farFromPointer && clearOfYes) { break; }
+      }
+      placeAt(x, y);
+      // playful little tilt each time it dodges
+      noBtn.style.transform = "rotate(" + ((Math.random() * 26 - 13) | 0) + "deg)";
+    }
+
+    // DESKTOP: flee when the pointer comes near.
+    window.addEventListener("mousemove", function (e) {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (!confirmView.hidden) { return; }      // confirmation showing -> done
+      var r = noBtn.getBoundingClientRect();
+      var d = Math.hypot(e.clientX - (r.left + r.width / 2),
+                         e.clientY - (r.top  + r.height / 2));
+      if (d < 120) { flee(); }
+    }, { passive: true });
+
+    // Any hostile event ON the button => dodge, and never let it act.
+    ["mouseenter", "mouseover", "mousedown", "pointerdown",
+     "pointerenter", "focus", "contextmenu"].forEach(function (ev) {
+      noBtn.addEventListener(ev, function (e) { e.preventDefault(); flee(); }, true);
+    });
+
+    // A click must NEVER register as a success.
+    noBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      flee();
+    }, true);
+
+    // MOBILE: the moment a finger lands, jump away and cancel the tap.
+    noBtn.addEventListener("touchstart", function (e) {
+      e.preventDefault();   // cancels the synthesized click
+      flee();
+    }, { passive: false, capture: true });
+
+    // Keep the button inside the viewport when the window resizes.
+    window.addEventListener("resize", function () {
+      if (!hasMoved) { snapToSlot(); return; }
+      var m = 10, w = noBtn.offsetWidth, h = noBtn.offsetHeight;
+      var x = parseFloat(noBtn.style.left) || m;
+      var y = parseFloat(noBtn.style.top)  || m;
+      x = Math.min(Math.max(m, x), window.innerWidth  - w - m);
+      y = Math.min(Math.max(m, y), window.innerHeight - h - m);
+      placeAt(x, y);
+    });
+
+    // Reveal the No button a beat after the card has settled into place.
+    function revealNoButton() {
+      if (!hasMoved) { snapToSlot(); }
+      noBtn.style.opacity = "1";
+      noBtn.style.pointerEvents = "auto";
+    }
+    setTimeout(revealNoButton, 850);                       // primary
+    window.addEventListener("load", function () {          // safety re-snap
+      if (!hasMoved) { snapToSlot(); }
+    });
+
+    /* ============================================================
+       "OF COURSE YES" — the happy path
+       ============================================================ */
+    var accepted = false;
+
+    function onYes() {
+      if (accepted) { return; }
+      accepted = true;
+
+      askView.hidden = true;
+      confirmView.hidden = false;
+      noBtn.style.display = "none";   // no need to run away anymore 💕
+      burstHearts();
+      sendApprovalEmail();
+    }
+    yesBtn.addEventListener("click", onYes);
+
+    /* ============================================================
+       EMAIL NOTIFICATION  (sent via EmailJS, with a timestamp)
+       ============================================================ */
+    function sendApprovalEmail() {
+      var now = new Date();
+      var stamp = now.toLocaleString();   // human-readable local timestamp
+
+      var params = {
+        to_email:      NOTIFY_EMAIL,
+        subject:       "She said YES! 💕",
+        message:       "Great news — she accepted the date invitation! 💕",
+        accepted_at:   stamp,
+        event_details: "Tomorrow (23 May 2026), 17:00 — Kipsala, Riga"
+      };
+
+      // Not configured yet? Skip gracefully (the page still works).
+      if (!window.emailjs ||
+          isPlaceholder(SERVICE_ID) ||
+          isPlaceholder(TEMPLATE_ID) ||
+          isPlaceholder(PUBLIC_KEY)) {
+        console.warn("[EmailJS] Not configured — set SERVICE_ID / TEMPLATE_ID / " +
+                     "PUBLIC_KEY at the top of the script to enable email.");
+        console.info("[EmailJS] Email that WOULD have been sent:", params);
+        return;
+      }
+
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, params)
+        .then(function ()    { console.log("[EmailJS] Approval email sent ✓"); })
+        .catch(function (err){ console.error("[EmailJS] Send failed:", err); });
+    }
+
+  })();
+  </script>
+</body>
+</html>
