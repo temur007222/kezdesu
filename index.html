@@ -11,11 +11,11 @@
 
   <!-- Link-preview (Open Graph) so a shared link looks lovely -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Жаным... 💕" />
+  <meta property="og:title" content="Aray... 💕" />
   <meta property="og:description" content="Саған бір сұрағым бар 💌" />
   <meta property="og:image" content="https://temur007222.github.io/kezdesu/her-photo.jpg" />
 
-  <title>Жаным... 💕</title>
+  <title>Aray... 💕</title>
 
   <!-- Emoji heart favicon (inline SVG, no extra file) -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%A4%EF%B8%8F%3C/text%3E%3C/svg%3E" />
@@ -336,7 +336,7 @@
       </div>
 
       <!-- Headline: warm question containing the Kazakh endearment "Жаным" -->
-      <h1 class="headline">Жаным, менімен <span class="accent">кездесуге</span> шығасың ба? 💕</h1>
+      <h1 class="headline">Aray, менімен <span class="accent">кездесуге</span> шығасың ба? 💕</h1>
 
       <!-- Date · time · location, clearly shown -->
       <div class="details">
@@ -364,51 +364,26 @@
   <!-- The runaway "No" button lives outside the card (fixed position) -->
   <button class="btn-no" id="noBtn" type="button" tabindex="-1" aria-hidden="true">Жоқ</button>
 
-  <!-- EmailJS SDK (client-side email, works on a static host) -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
   <script>
   (function () {
     "use strict";
 
     /* ============================================================
-       EMAILJS CONFIGURATION  —  ❗ FILL THESE IN  ❗
+       EMAIL NOTIFICATION  —  via FormSubmit.co  (no account, no keys)
        ------------------------------------------------------------
-       The page sends a confirmation email when she clicks "Әрине, иә".
-       It works with no backend. To enable it:
+       When she taps "Әрине, иә 💕", the page emails a confirmation
+       (with a timestamp) to the address below using FormSubmit
+       (https://formsubmit.co) — a free service that needs no backend,
+       no account, and no API keys.
 
-         1. Create a free account at  https://www.emailjs.com/
-         2. Add an Email Service (e.g. connect your Gmail).
-              → copy its  Service ID   into  SERVICE_ID  below.
-         3. Create an Email Template. Inside the template use these
-            variables (type them with double curly braces):
-                 {{to_email}}        — put this in the template's "To Email" field
-                 {{subject}}         — e.g. used as the subject line
-                 {{message}}         — main body text
-                 {{accepted_at}}     — the timestamp she accepted
-                 {{event_details}}   — date / time / place of the date
-              → copy its  Template ID  into  TEMPLATE_ID  below.
-         4. Open  Account → General → Public Key.
-              → copy your  Public Key  into  PUBLIC_KEY  below.
+       ONE-TIME ACTIVATION: the first time a form is sent to this
+       address, FormSubmit emails an "Activate Form" link. Click it
+       once and every future submission is delivered automatically.
 
-       Until you fill these in, the page still works perfectly — it just
-       skips sending the email (and logs what it *would* have sent).
+       To change the recipient, edit NOTIFY_EMAIL below.
        ============================================================ */
-    const SERVICE_ID  = "YOUR_SERVICE_ID";    // e.g. "service_ab12cd3"
-    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";   // e.g. "template_xy98zw7"
-    const PUBLIC_KEY  = "YOUR_PUBLIC_KEY";    // e.g. "AbCdEfGhIjKlMnOp"
-
-    // Where the approval notification is sent.
-    const NOTIFY_EMAIL = "temurxaydarov1@gmail.com";
-
-    // True while a constant still holds its placeholder value.
-    const isPlaceholder = function (v) { return !v || v.indexOf("YOUR_") === 0; };
-
-    // Initialise EmailJS only if a real public key has been provided.
-    if (window.emailjs && !isPlaceholder(PUBLIC_KEY)) {
-      try { emailjs.init({ publicKey: PUBLIC_KEY }); }
-      catch (e) { try { emailjs.init(PUBLIC_KEY); } catch (_) {} }
-    }
+    const NOTIFY_EMAIL   = "temurxaydarov1@gmail.com";
+    const FORMSUBMIT_URL = "https://formsubmit.co/ajax/" + NOTIFY_EMAIL;
 
     /* ---------- shortcuts ---------- */
     var $ = function (id) { return document.getElementById(id); };
@@ -573,34 +548,28 @@
     yesBtn.addEventListener("click", onYes);
 
     /* ============================================================
-       EMAIL NOTIFICATION  (sent via EmailJS, with a timestamp)
+       EMAIL NOTIFICATION  (sent via FormSubmit, with a timestamp)
        ============================================================ */
     function sendApprovalEmail() {
-      var now = new Date();
-      var stamp = now.toLocaleString();   // human-readable local timestamp
+      var stamp = new Date().toLocaleString();   // human-readable local time
 
-      var params = {
-        to_email:      NOTIFY_EMAIL,
-        subject:       "She said YES! 💕",
-        message:       "Great news — she accepted the date invitation! 💕",
-        accepted_at:   stamp,
-        event_details: "Tomorrow (23 May 2026), 17:00 — Kipsala, Riga"
+      var payload = {
+        _subject:     "💕 She said YES!",
+        _template:    "table",        // FormSubmit renders a tidy table email
+        _captcha:     "false",
+        Message:      "Great news — she accepted the date invitation! 💕",
+        Accepted_at:  stamp,
+        Date_details: "Tomorrow (23 May 2026), 17:00 — Kipsala, Riga"
       };
 
-      // Not configured yet? Skip gracefully (the page still works).
-      if (!window.emailjs ||
-          isPlaceholder(SERVICE_ID) ||
-          isPlaceholder(TEMPLATE_ID) ||
-          isPlaceholder(PUBLIC_KEY)) {
-        console.warn("[EmailJS] Not configured — set SERVICE_ID / TEMPLATE_ID / " +
-                     "PUBLIC_KEY at the top of the script to enable email.");
-        console.info("[EmailJS] Email that WOULD have been sent:", params);
-        return;
-      }
-
-      emailjs.send(SERVICE_ID, TEMPLATE_ID, params)
-        .then(function ()    { console.log("[EmailJS] Approval email sent ✓"); })
-        .catch(function (err){ console.error("[EmailJS] Send failed:", err); });
+      fetch(FORMSUBMIT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { console.log("[FormSubmit] approval email sent ✓", d); })
+        .catch(function (e){ console.error("[FormSubmit] send failed:", e); });
     }
 
   })();

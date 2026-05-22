@@ -6,12 +6,14 @@ A single-page romantic date invitation (in Kazakh).
 - `index.html` — the whole page (HTML + CSS + JS embedded)
 - `her-photo.jpg` — her photo
 
-## EmailJS (optional — to receive a confirmation email)
-When she taps **"Әрине, иә 💕"** the page can email a confirmation.
-Open `index.html`, find the `EMAILJS CONFIGURATION` block near the top of
-the `<script>`, and fill in `SERVICE_ID`, `TEMPLATE_ID`, and `PUBLIC_KEY`
-from your https://www.emailjs.com/ dashboard. Until then the page works
-fully — it just skips the email.
+## Email confirmation (FormSubmit.co — no setup)
+When she taps **"Әрине, иә 💕"** the page emails a timestamped
+confirmation via [FormSubmit](https://formsubmit.co) — no account, no
+API keys. The recipient is the `NOTIFY_EMAIL` constant in `index.html`.
+
+**One-time activation:** the first form sent to that address triggers a
+FormSubmit "Activate Form" email. Click that link once and every future
+submission is delivered automatically.
 
 ## Local preview
 ```bash
